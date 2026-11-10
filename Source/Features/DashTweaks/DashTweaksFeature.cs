@@ -1,4 +1,5 @@
-﻿using DogshitSols.Features.DashTweaks.HarmonyPatches;
+﻿using DogshitSols.Features.ContactDamage.HarmonyPatches;
+using DogshitSols.Features.DashTweaks.HarmonyPatches;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -53,6 +54,11 @@ namespace DogshitSols.Features.DashTweaks {
             if (SceneManager.GetActiveScene().name != "A4_S5_DaoTrapHouse_Final") {
                 PlayerTrapsDamageReceiver?.SetActive(false);
             }
+        }
+
+        internal static void Release() {
+            PlayerRollStatePatches.OnStateEnterPostfix -= HandleRollStateEnter;
+            PlayerRollStatePatches.OnStateExitPostfix -= HandleRollStateExit;
         }
     }
 }

@@ -38,7 +38,8 @@ public class DogshitSols : BaseUnityPlugin {
 
     private void OnDestroy() {
         // Make sure to clean up resources here to support hot reloading
-
+        DashTweaksFeature.Release();
+        ContactDamageFeature.Release();
         harmony.UnpatchSelf();
     }
 }

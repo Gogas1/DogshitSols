@@ -29,6 +29,9 @@
         <Reference Include="rcg.rcgmakercore.Runtime">
 			<HintPath>$(DllPath)/rcg.rcgmakercore.Runtime.dll</HintPath>
         </Reference>
+		<Reference Include="barbaro.autoattributes.Runtime">
+			<HintPath>$(DllPath)/barbaro.autoattributes.Runtime.dll</HintPath>
+		</Reference>
         <Reference Include="RCG_General">
             <HintPath>$(DllPath)/RCG_General.dll</HintPath>
         </Reference>
