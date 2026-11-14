@@ -6,3 +6,7 @@ v0.1.1 patch
 
 - fixed contact damage inconsistency
 - while using the talisman you don't receive contact damage
+
+v0.1.2 patch
+
+- make contact damage disabled while enemy is invincible
