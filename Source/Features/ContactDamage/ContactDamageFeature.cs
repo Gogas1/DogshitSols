@@ -57,8 +57,12 @@ namespace DogshitSols.Features.ContactDamage {
             }
         }
 
-        private static void HandleMonsterInit(MonsterBase obj) {
-            var logicRootTransform = obj?.monsterCore?.logicRoot ?? null;
+        private static void HandleMonsterInit(MonsterBase monster) {
+            if(monster == null) {
+                return;
+            }
+
+            var logicRootTransform = monster.monsterCore?.logicRoot ?? null;
 
             if (logicRootTransform == null) return;
 
@@ -84,6 +88,10 @@ namespace DogshitSols.Features.ContactDamage {
             var touchDamageTriggerDetector = touchDamageTransform.GetComponentInChildren<TriggerDetector>(true);
             touchDamageEffectDealer.type = EffectType.Universe2;
             _triggerDetectorAllValidEffectTypeField.SetValue(touchDamageTriggerDetector, EffectType.Universe2);
+
+            var watcher = monster.gameObject.AddComponent<EnemyInvincibilityWatcher>();
+            watcher.TouchDamageGameObject = touchDamageTransform.gameObject;
+            watcher.Monster = monster;
         }
 
         internal static void Release() {
