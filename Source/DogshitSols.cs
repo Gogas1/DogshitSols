@@ -19,10 +19,16 @@ namespace DogshitSols;
 public class DogshitSols : BaseUnityPlugin {
 
     private Harmony harmony = null!;
+    internal ConfigurationManager ConfigManager = null!;
+    internal static DogshitSols Instance { get; private set; } = null!;
 
     private void Awake() {
         Log.Init(Logger);
         RCGLifeCycle.DontDestroyForever(gameObject);
+        hideFlags = HideFlags.HideAndDontSave;
+        
+        Instance = this;
+        this.ConfigManager = new ConfigurationManager(Config);
 
         harmony = Harmony.CreateAndPatchAll(typeof(DogshitSols).Assembly);
 

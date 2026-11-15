@@ -11,6 +11,18 @@ namespace DogshitSols.Features.ContactDamage {
         internal MonsterBase Monster = null!;
         private GameObject? _correntDamageReceiver = null;        
 
+        private void Awake() {
+            DogshitSols.Instance.ConfigManager.OnLadyEClonesDamageEnabledChanged += HandleLadyEClonesDamageEnabledChanged;
+        }
+
+        private void OnDestroy() {
+            DogshitSols.Instance.ConfigManager.OnLadyEClonesDamageEnabledChanged -= HandleLadyEClonesDamageEnabledChanged;
+        }
+
+        private void HandleLadyEClonesDamageEnabledChanged(bool _) {
+            _correntDamageReceiver = null;
+        }
+
         private HashSet<string> LadyENames = new HashSet<string>() {
             "StealthGameMonster_Boss_ButterFly Variant",
             "StealthGameMonster_Boss_ButterFly Variant (1)",
@@ -24,7 +36,7 @@ namespace DogshitSols.Features.ContactDamage {
                 return;
             }
 
-            if(LadyENames.Contains(Monster.name)) {
+            if(DogshitSols.Instance.ConfigManager.LadyEClonesDamageEnabled.Value && LadyENames.Contains(Monster.name)) {
                 var canHurtObject = Monster.ChildAnimator.gameObject.transform.Find("CanHurt");
                 _correntDamageReceiver = canHurtObject != null ? canHurtObject.gameObject : null;
                 return;
