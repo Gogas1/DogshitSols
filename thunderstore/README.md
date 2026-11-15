@@ -10,3 +10,7 @@ v0.1.1 patch
 v0.1.2 patch
 
 - make contact damage disabled while enemy is invincible
+
+v0.1.3 patch
+
+- fixed Lady E clones contact damage inconsistency
