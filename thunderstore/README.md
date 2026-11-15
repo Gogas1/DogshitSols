@@ -14,3 +14,4 @@ v0.1.2 patch
 v0.1.3 patch
 
 - fixed Lady E clones contact damage inconsistency
+- added a config entry to enable or disable Lady Ethereal clones to have a contact damage. Use F1 configuration manager
