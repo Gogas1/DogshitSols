@@ -1,7 +1,11 @@
-﻿using HarmonyLib;
+﻿using BepInEx.Configuration;
+using HarmonyLib;
+using MonoMod.Utils.Cil;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
 
 namespace DogshitSols.Features.DashTweaks.HarmonyPatches {
@@ -33,26 +37,38 @@ namespace DogshitSols.Features.DashTweaks.HarmonyPatches {
             }
         }
 
+        private static MethodInfo _dogshitSolsGetInstanceMethod = typeof(DogshitSols).GetProperty("Instance", BindingFlags.NonPublic | BindingFlags.Static)!.GetMethod!;
+        private static FieldInfo _dogshitSolsConfigManagerField = typeof(DogshitSols).GetField("ConfigManager", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        private static FieldInfo _configurationManagerDisableDashIFramesField = typeof(ConfigurationManager).GetField("DisableDashIFrames", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        private static MethodInfo _configEntryGetValueMethod = typeof(ConfigEntry<bool>).GetProperty("Value", BindingFlags.Public | BindingFlags.Instance)!.GetMethod!;
+
+        private static MethodInfo _playerIsWeakGetter = typeof(Player).GetProperty("IsWeak", BindingFlags.Public | BindingFlags.Instance)!.GetMethod!;
+
         [HarmonyPatch("OnStateEnter")]
         [HarmonyTranspiler]
         private static IEnumerable<CodeInstruction> OnStateEnter_Transpiler(IEnumerable<CodeInstruction> instructions) {
-            bool found = false;
+            var m = new CodeMatcher(instructions)
+                .MatchForward(
+                    false,
+                    new CodeMatch(OpCodes.Ldarg_0),
+                    new CodeMatch(OpCodes.Ldfld),
+                    new CodeMatch(OpCodes.Callvirt, _playerIsWeakGetter),
+                    new CodeMatch(ci => ci.Branches(out _)))
+                .ThrowIfInvalid("first brtrue not found")
+                .Advance(3); 
 
-            var instructionsList = instructions.ToList();
+                    var target = (Label)m.Operand;
 
-            for (int i = 0; i < instructionsList.Count; i++) {
-                var instruction = instructionsList[i];
-                var targetAheadInstruction = instructionsList.ElementAtOrDefault(i + 4);
+                    m.Advance(1)
+                     .Insert(
+                        new CodeInstruction(OpCodes.Call, _dogshitSolsGetInstanceMethod),
+                        new CodeInstruction(OpCodes.Ldfld, _dogshitSolsConfigManagerField),
+                        new CodeInstruction(OpCodes.Ldfld, _configurationManagerDisableDashIFramesField),
+                        new CodeInstruction(OpCodes.Callvirt, _configEntryGetValueMethod),
+                        new CodeInstruction(OpCodes.Brtrue, target));
 
-
-                if(!found && targetAheadInstruction != null && targetAheadInstruction.Calls(AccessTools.Method(typeof(Health), "SetReceiversActivate"))) {
-                    i = i + 4;
-                    found = true;
-                    continue;
-                }
-
-                yield return instruction;
-            }
+                    return m.InstructionEnumeration();
+        
         }
     }
 }
